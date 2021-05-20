@@ -754,65 +754,63 @@ opt = {
 
 os.makedirs('./data/', exist_ok=True)
 
-train_src_data, train_trg_data = read_data(opt['train_src_data'], opt['train_trg_data'])
-valid_src_data, valid_trg_data = read_data(opt['valid_src_data'], opt['valid_trg_data'])
+# train_src_data, train_trg_data = read_data(opt['train_src_data'], opt['train_trg_data'])
+# valid_src_data, valid_trg_data = read_data(opt['valid_src_data'], opt['valid_trg_data'])
 
-SRC, TRG = create_fields(opt['src_lang'], opt['trg_lang'])
-train_iter = create_dataset(train_src_data, train_trg_data, opt['max_strlen'], opt['batchsize'], opt['device'], SRC, TRG, istrain=True)
-valid_iter = create_dataset(valid_src_data, valid_trg_data, opt['max_strlen'], opt['batchsize'], opt['device'], SRC, TRG, istrain=False)
+# SRC, TRG = create_fields(opt['src_lang'], opt['trg_lang'])
+# train_iter = create_dataset(train_src_data, train_trg_data, opt['max_strlen'], opt['batchsize'], opt['device'], SRC, TRG, istrain=True)
+# valid_iter = create_dataset(valid_src_data, valid_trg_data, opt['max_strlen'], opt['batchsize'], opt['device'], SRC, TRG, istrain=False)
 
+import dill
+with open("SRC.Field","rb")as f:
+     SRC=dill.load(f)
+with open("TRG.Field","rb")as g:
+     TRG=dill.load(g)
 
 src_pad = SRC.vocab.stoi['<pad>']
 trg_pad = TRG.vocab.stoi['<pad>']
 
 
 model = Transformer(len(SRC.vocab), len(TRG.vocab), opt['d_model'], opt['n_layers'], opt['heads'], opt['dropout'])
-# model.load_state_dict(torch.load('./transformer.pth'))
-# import seaborn
-# import matplotlib.pyplot as plt
+model.load_state_dict(torch.load('./transformer.pth'))
 
-# def draw(data, x, y, ax):
-#     seaborn.heatmap(data, 
-#                     xticklabels=x, square=True, yticklabels=y, vmin=0.0, vmax=1.0, 
-#                     cbar=False, ax=ax, annot=False)
+# for p in model.parameters():
+#     if p.dim() > 1:
+#         nn.init.xavier_uniform_(p)
 
-for p in model.parameters():
-    if p.dim() > 1:
-        nn.init.xavier_uniform_(p)
-
-model = model.to(opt['device'])
+# model = model.to(opt['device'])
 
 
 
-optimizer = ScheduledOptim(
-        torch.optim.Adam(model.parameters(), betas=(0.9, 0.98), eps=1e-09),
-        0.2, opt['d_model'], 4000)
+# optimizer = ScheduledOptim(
+#         torch.optim.Adam(model.parameters(), betas=(0.9, 0.98), eps=1e-09),
+#         0.2, opt['d_model'], 4000)
 
-criterion = LabelSmoothingLoss(len(TRG.vocab), padding_idx=trg_pad, smoothing=0.1)
+# criterion = LabelSmoothingLoss(len(TRG.vocab), padding_idx=trg_pad, smoothing=0.1)
 
-import time
+# import time
 
-for epoch in range(opt['epochs']):
-    total_loss = 0
+# for epoch in range(opt['epochs']):
+#     total_loss = 0
     
-    for i, batch in enumerate(train_iter): 
-        s = time.time()
-        loss = step(model, optimizer, batch, criterion)
+#     for i, batch in enumerate(train_iter): 
+#         s = time.time()
+#         loss = step(model, optimizer, batch, criterion)
         
-        total_loss += loss
+#         total_loss += loss
         
-        if (i + 1) % opt['printevery'] == 0:
-            avg_loss = total_loss/opt['printevery']
-            print('epoch: {:03d} - iter: {:05d} - train loss: {:.4f} - time: {:.4f}'.format(epoch, i, avg_loss, time.time()- s))
-            total_loss = 0
+#         if (i + 1) % opt['printevery'] == 0:
+#             avg_loss = total_loss/opt['printevery']
+#             print('epoch: {:03d} - iter: {:05d} - train loss: {:.4f} - time: {:.4f}'.format(epoch, i, avg_loss, time.time()- s))
+#             total_loss = 0
 
-    s = time.time()
-    valid_loss = validiate(model, valid_iter, criterion)
-    bleuscore = bleu(valid_src_data[:500], valid_trg_data[:500], model, SRC, TRG, opt['device'], opt['k'], opt['max_strlen'])
-    print('epoch: {:03d} - iter: {:05d} - valid loss: {:.4f} - bleu score: {:.4f} - time: {:.4f}'.format(epoch, i, valid_loss, bleuscore, time.time() - s))
+#     s = time.time()
+#     valid_loss = validiate(model, valid_iter, criterion)
+#     bleuscore = bleu(valid_src_data[:500], valid_trg_data[:500], model, SRC, TRG, opt['device'], opt['k'], opt['max_strlen'])
+#     print('epoch: {:03d} - iter: {:05d} - valid loss: {:.4f} - bleu score: {:.4f} - time: {:.4f}'.format(epoch, i, valid_loss, bleuscore, time.time() - s))
     
 
-bleu(valid_src_data, valid_trg_data, model, SRC, TRG, opt['device'], opt['k'], opt['max_strlen'])
+# bleu(valid_src_data, valid_trg_data, model, SRC, TRG, opt['device'], opt['k'], opt['max_strlen'])
 
 sentence='My family was not poor , and myself , I had never experienced hunger .'
 trans_sent = translate_sentence(sentence, model, SRC, TRG, opt['device'], opt['k'], opt['max_strlen'])
@@ -821,3 +819,38 @@ trans_sent
 
 
 
+# import seaborn
+# import matplotlib.pyplot as plt
+
+# def draw(data, x, y, ax):
+#     seaborn.heatmap(data, 
+#                     xticklabels=x, square=True, yticklabels=y, vmin=0.0, vmax=1.0, 
+#                     cbar=False, ax=ax, annot=False)
+
+
+# sent = SRC.preprocess(sentence)
+
+# for layer in range(1, 6, 2):
+#     fig, axs = plt.subplots(1,4, figsize=(30, 15))
+#     print("Encoder Layer", layer+1)
+#     for h in range(4):
+#         draw(model.encoder.layers[layer].attn.attn[0, h].data.cpu(), 
+#             sent, sent if h ==0 else [], ax=axs[h])
+#     plt.show()
+
+
+# trg_sent = ['<sos>'] + TRG.preprocess(trans_sent)
+
+# for layer in range(1, 6, 2):
+#     fig, axs = plt.subplots(1,4, figsize=(20, 10))
+#     print("Decoder Self Layer", layer+1)
+#     for h in range(4):
+#         draw(model.decoder.layers[layer].attn_1.attn[0, h].data[:len(trg_sent), :len(trg_sent)].cpu(), 
+#             trg_sent, trg_sent if h ==0 else [], ax=axs[h])
+#     plt.show()
+#     print("Decoder Src Layer", layer+1)
+#     fig, axs = plt.subplots(1,4, figsize=(20, 10))
+#     for h in range(4):
+#         draw(model.decoder.layers[layer].attn_2.attn[0, h].data[:len(trg_sent), :len(sent)].cpu(), 
+#             sent, trg_sent if h ==0 else [], ax=axs[h])
+#     plt.show()
