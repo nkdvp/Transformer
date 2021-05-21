@@ -811,6 +811,8 @@ model.load_state_dict(torch.load('./transformer.pth'))
     
 
 # bleu(valid_src_data, valid_trg_data, model, SRC, TRG, opt['device'], opt['k'], opt['max_strlen'])
+model = model.to(opt['device'])
+model.eval()
 
 sentence='My family was not poor , and myself , I had never experienced hunger .'
 trans_sent = translate_sentence(sentence, model, SRC, TRG, opt['device'], opt['k'], opt['max_strlen'])
