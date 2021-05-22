@@ -1,5 +1,7 @@
 # Transformer
 
+Python version: 3.7.10
+
 Install Library from file requirements.txt:
 	$ pip install -r requirements.txt --no-cache-dir
 
