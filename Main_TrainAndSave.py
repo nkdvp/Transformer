@@ -736,8 +736,8 @@ def bleu(valid_src_data, valid_trg_data, model, SRC, TRG, device, k, max_strlen)
 opt = {
     'train_src_data':'./data/train.en',
     'train_trg_data':'./data/train.vi',
-    'valid_src_data':'./data/tst2013.en',
-    'valid_trg_data':'./data/tst2013.vi',
+    'valid_src_data':'./data/tst2012.en',
+    'valid_trg_data':'./data/tst2012.vi',
     'src_lang':'vi_spacy_model',
     'trg_lang':'vi_spacy_model',#'vi_spacy_model',
     'max_strlen':160,
@@ -769,14 +769,6 @@ trg_pad = TRG.vocab.stoi['<pad>']
 
 
 model = Transformer(len(SRC.vocab), len(TRG.vocab), opt['d_model'], opt['n_layers'], opt['heads'], opt['dropout'])
-# model.load_state_dict(torch.load('./transformer.pth'))
-# import seaborn
-# import matplotlib.pyplot as plt
-
-# def draw(data, x, y, ax):
-#     seaborn.heatmap(data, 
-#                     xticklabels=x, square=True, yticklabels=y, vmin=0.0, vmax=1.0, 
-#                     cbar=False, ax=ax, annot=False)
 
 for p in model.parameters():
     if p.dim() > 1:
