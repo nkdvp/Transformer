@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+    <form action="/" method="POST">
+        <label for="src-sentence">Source sentence: </label>
+        <br/>
+        <textarea id="src-sentence" name="src-sentence" rows="4" cols="50"></textarea>
+        <input type="submit" value="Submit">
+        {% if plot: %}
+            <p>{{dest}}</p>
+            {% for url in encList %}
+                <img src="data:image/png;base64,{{url}}">
+            {% endfor %}
+            {% for url in decList %}
+                <img src="data:image/png;base64,{{url}}">
+            {% endfor %}
+        {% endif %}
+    </form>
+</body>
+</html>
