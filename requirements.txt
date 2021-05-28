@@ -1,5 +1,6 @@
 flask-ngrok
 seaborn
+jupyter
 blis==0.4.1
 catalogue==1.0.0
 certifi==2020.12.5
