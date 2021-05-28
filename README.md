@@ -1,6 +1,6 @@
 # About this work
 
-This is a work on a NLP course at our school, in particular, on open-domain question answering.
+This is a work on a NLP course at our school, in particular.
 
 # Transformer
 
