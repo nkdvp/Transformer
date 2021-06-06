@@ -5,6 +5,7 @@ This is a work on a NLP course at our school, in particular.
 # Transformer
 
 Python version: 3.7.10
+Cuda: 10.2
 
 Recommend use anaconda to create env: 
 	conda create -n env37 python=3.7
